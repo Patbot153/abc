@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高潮增量 - Orgasm Idle</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    background: linear-gradient(135deg, #1a0a1a 0%, #2d1b2d 40%, #1a1020 100%);
+    color: #f8e8f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  header {
+    text-align: center;
+    padding: 25px 0 15px;
+    position: relative;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    background: linear-gradient(90deg, #ff6b9d, #c44569, #ff9ff3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(255, 107, 157, 0.4);
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    color: #c9a0b5;
+    font-size: 0.95rem;
+    margin-top: 6px;
+  }
+
+  /* 资源面板 */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 25px 0;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 150, 180, 0.25);
+    border-radius: 16px;
+    padding: 18px 20px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 100, 150, 0.15);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #d4a5b8;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ff9ec4;
+  }
+
+  .stat-sub {
+    font-size: 0.8rem;
+    color: #a88a9a;
+    margin-top: 4px;
+  }
+
+  /* 主点击按钮 */
+  .click-area {
+    text-align: center;
+    margin: 30px 0;
+  }
+
+  #climaxBtn {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 30% 30%, #ff8fab, #c44569 70%);
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.6),
+                0 12px 30px rgba(196, 69, 105, 0.5);
+    transition: transform 0.1s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #climaxBtn:hover {
+    transform: scale(1.05);
+  }
+
+  #climaxBtn:active {
+    transform: scale(0.92);
+  }
+
+  #climaxBtn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  #climaxBtn.pulse::after {
+    opacity: 1;
+  }
+
+  /* 商店区域 */
+  .shop {
+    margin-top: 35px;
+  }
+
+  .shop-title {
+    font-size: 1.3rem;
+    color: #ffb3c9;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .shop-title span {
+    font-size: 1.5rem;
+  }
+
+  .items {
+    display: grid;
+    gap: 12px;
+  }
+
+  .item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 150, 180, 0.2);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .item:hover {
+    background: rgba(255, 150, 180, 0.1);
+    border-color: rgba(255, 150, 180, 0.4);
+  }
+
+  .item-info {
+    flex: 1;
+  }
+
+  .item-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #ffe0ec;
+  }
+
+  .item-desc {
+    font-size: 0.82rem;
+    color: #b89aaa;
+    margin-top: 3px;
+  }
+
+  .item-owned {
+    font-size: 0.78rem;
+    color: #e0a0b8;
+    margin-top: 4px;
+  }
+
+  .buy-btn {
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    min-width: 110px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .buy-btn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: scale(1.03);
+  }
+
+  .buy-btn:disabled {
+    background: #5a3a4a;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* 底部提示 */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-bottom: 30px;
+    color: #8a6a7a;
+    font-size: 0.8rem;
+  }
+
+  /* 浮动数字 */
+  .float-text {
+    position: absolute;
+    pointer-events: none;
+    font-weight: 700;
+    color: #ff9ec4;
+    font-size: 1.4rem;
+    animation: floatUp 1s ease-out forwards;
+    z-index: 100;
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1.2); }
+  }
+
+  /* 响应式 */
+  @media (max-width: 600px) {
+    h1 { font-size: 1.8rem; }
+    .stats { grid-template-columns: 1fr; }
+    #climaxBtn { width: 150px; height: 150px; font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>高潮增量</h1>
+      <div class="subtitle">通过小玩具和媚药，不断追求更多高潮</div>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">累计高潮次数</div>
+        <div class="stat-value" id="orgasms">0</div>
+        <div class="stat-sub">总成就感</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">当前快感</div>
+        <div class="stat-value" id="pleasure">0</div>
+        <div class="stat-sub">用于购买道具</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">每秒高潮</div>
+        <div class="stat-value" id="ops">0</div>
+        <div class="stat-sub">被动产出</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">点击倍率</div>
+        <div class="stat-value" id="clickPower">1</div>
+        <div class="stat-sub">单次获得快感</div>
+      </div>
+    </div>
+
+    <div class="click-area">
+      <button id="climaxBtn">高潮一下</button>
+    </div>
+
+    <div class="shop">
+      <div class="shop-title"><span>🧸</span> 小玩具商店</div>
+      <div class="items" id="toyShop"></div>
+    </div>
+
+    <div class="shop" style="margin-top: 30px;">
+      <div class="shop-title"><span>💊</span> 媚药商店</div>
+      <div class="items" id="drugShop"></div>
+    </div>
+
+    <div class="footer">
+      提示：先多点几次积累快感，再购买道具开启自动产出。<br>
+      数据自动保存在本地，刷新页面不会丢失。
+    </div>
+  </div>
+
+<script>
+// ==================== 游戏数据 ====================
+const saveKey = 'orgasmIdle_v1';
+
+let state = {
+  orgasms: 0,          // 累计高潮次数
+  pleasure: 0,         // 当前快感（货币）
+  clickPower: 1,       // 点击获得的快感
+  toys: {},            // 已拥有的玩具数量
+  drugs: {},           // 已拥有的媚药数量
+  lastTick: Date.now()
+};
+
+// 小玩具定义（被动产出高潮）
+const toys = [
+  {
+    id: 'finger',
+    name: '手指',
+    desc: '最基础的工具，轻轻摩擦',
+    baseCost: 15,
+    baseOps: 0.1,      // 每秒高潮
+    costMult: 1.15
+  },
+  {
+    id: 'vibe',
+    name: '跳蛋',
+    desc: '小型震动玩具，持续刺激',
+    baseCost: 100,
+    baseOps: 0.8,
+    costMult: 1.18
+  },
+  {
+    id: 'wand',
+    name: 'AV棒',
+    desc: '强力震动，高潮来得又快又猛',
+    baseCost: 800,
+    baseOps: 5,
+    costMult: 1.2
+  },
+  {
+    id: 'dildo',
+    name: '假阳具',
+    desc: '模拟真实感，深度刺激',
+    baseCost: 5000,
+    baseOps: 25,
+    costMult: 1.22
+  },
+  {
+    id: 'machine',
+    name: '性爱机器',
+    desc: '全自动高速活塞，根本停不下来',
+    baseCost: 35000,
+    baseOps: 150,
+    costMult: 1.25
+  },
+  {
+    id: 'ai',
+    name: 'AI高潮系统',
+    desc: '智能算法精准控制每一次高潮',
+    baseCost: 250000,
+    baseOps: 900,
+    costMult: 1.28
+  }
+];
+
+// 媚药定义（提升点击与整体倍率）
+const drugs = [
+  {
+    id: 'lube',
+    name: '润滑液',
+    desc: '让每一次摩擦都更顺滑（+点击倍率）',
+    baseCost: 50,
+    effect: 'click',   // 增加点击倍率
+    value: 1,
+    costMult: 1.4
+  },
+  {
+    id: 'pill',
+    name: '催情片',
+    desc: '轻微催情，身体更容易兴奋（+全部产出）',
+    baseCost: 300,
+    effect: 'mult',
+    value: 0.15,       // +15% 全部产出
+    costMult: 1.5
+  },
+  {
+    id: 'serum',
+    name: '强效媚药',
+    desc: '药效猛烈，高潮阈值大幅降低（+全部产出）',
+    baseCost: 2500,
+    effect: 'mult',
+    value: 0.35,
+    costMult: 1.6
+  },
+  {
+    id: 'elixir',
+    name: '永恒之液',
+    desc: '传说中的春药，让快感永不消退',
+    baseCost: 20000,
+    effect: 'mult',
+    value: 0.8,
+    costMult: 1.7
+  },
+  {
+    id: 'goddess',
+    name: '女神之泪',
+    desc: '直接提升身体敏感度到极致',
+    baseCost: 150000,
+    effect: 'mult',
+    value: 2.0,
+    costMult: 1.85
+  }
+];
+
+// ==================== 核心逻辑 ====================
+function getOwned(id, type) {
+  return (type === 'toy' ? state.toys[id] : state.drugs[id]) || 0;
+}
+
+function getCost(item, owned) {
+  return Math.floor(item.baseCost * Math.pow(item.costMult, owned));
+}
+
+function calcOps() {
+  let base = 0;
+  toys.forEach(t => {
+    base += getOwned(t.id, 'toy') * t.baseOps;
+  });
+
+  // 媚药倍率
+  let mult = 1;
+  drugs.forEach(d => {
+    if (d.effect === 'mult') {
+      mult += getOwned(d.id, 'drug') * d.value;
+    }
+  });
+
+  return base * mult;
+}
+
+function calcClickPower() {
+  let power = 1;
+  drugs.forEach(d => {
+    if (d.effect === 'click') {
+      power += getOwned(d.id, 'drug') * d.value;
+    }
+  });
+  // 额外：部分媚药也给点击一点加成
+  let mult = 1;
+  drugs.forEach(d => {
+    if (d.effect === 'mult') {
+      mult += getOwned(d.id, 'drug') * d.value * 0.3;
+    }
+  });
+  return power * mult;
+}
+
+function buy(item, type) {
+  const owned = getOwned(item.id, type);
+  const cost = getCost(item, owned);
+  if (state.pleasure < cost) return;
+
+  state.pleasure -= cost;
+  if (type === 'toy') {
+    state.toys[item.id] = owned + 1;
+  } else {
+    state.drugs[item.id] = owned + 1;
+  }
+  updateUI();
+  save();
+}
+
+function clickClimax() {
+  const gain = calcClickPower();
+  state.pleasure += gain;
+  state.orgasms += gain * 0.1; // 点击也贡献一点累计高潮
+
+  // 视觉反馈
+  const btn = document.getElementById('climaxBtn');
+  btn.classList.add('pulse');
+  setTimeout(() => btn.classList.remove('pulse'), 200);
+
+  // 浮动数字
+  spawnFloat(gain);
+
+  updateUI();
+  save();
+}
+
+function spawnFloat(amount) {
+  const btn = document.getElementById('climaxBtn');
+  const rect = btn.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'float-text';
+  el.textContent = `+${formatNum(amount)}`;
+  el.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 40) + 'px';
+  el.style.top = (rect.top + window.scrollY + 20) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+function tick() {
+  const now = Date.now();
+  const dt = (now - state.lastTick) / 1000;
+  state.lastTick = now;
+
+  const ops = calcOps();
+  if (ops > 0) {
+    state.orgasms += ops * dt;
+    state.pleasure += ops * dt * 0.5; // 被动也给一点快感
+  }
+
+  updateUI();
+}
+
+function formatNum(n) {
+  if (n < 1000) return n.toFixed(n < 10 ? 1 : 0);
+  if (n < 1e6) return (n / 1000).toFixed(1) + 'K';
+  if (n < 1e9) return (n / 1e6).toFixed(2) + 'M';
+  if (n < 1e12) return (n / 1e9).toFixed(2) + 'B';
+  return (n / 1e12).toFixed(2) + 'T';
+}
+
+function updateUI() {
+  document.getElementById('orgasms').textContent = formatNum(state.orgasms);
+  document.getElementById('pleasure').textContent = formatNum(state.pleasure);
+  document.getElementById('ops').textContent = formatNum(calcOps());
+  document.getElementById('clickPower').textContent = formatNum(calcClickPower());
+
+  // 渲染商店
+  renderShop('toyShop', toys, 'toy');
+  renderShop('drugShop', drugs, 'drug');
+}
+
+function renderShop(containerId, list, type) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  list.forEach(item => {
+    const owned = getOwned(item.id, type);
+    const cost = getCost(item, owned);
+    const canBuy = state.pleasure >= cost;
+
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        <div class="item-desc">${item.desc}</div>
+        <div class="item-owned">已拥有：${owned}</div>
+      </div>
+      <button class="buy-btn" ${canBuy ? '' : 'disabled'} onclick="buy(${JSON.stringify(item).replace(/"/g, '&quot;')}, '${type}')">
+        ${formatNum(cost)} 快感
+      </button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ==================== 存档 ====================
+function save() {
+  localStorage.setItem(saveKey, JSON.stringify(state));
+}
+
+function load() {
+  const raw = localStorage.getItem(saveKey);
+  if (raw) {
+    try {
+      const data = JSON.parse(raw);
+      state = { ...state, ...data };
+      state.lastTick = Date.now(); // 防止离线暴涨太多，可选
+    } catch (e) {}
+  }
+}
+
+// ==================== 启动 ====================
+document.getElementById('climaxBtn').addEventListener('click', clickClimax);
+
+load();
+updateUI();
+
+// 游戏循环
+setInterval(tick, 100); // 10次/秒更新
+setInterval(save, 5000); // 每5秒自动存档
+</script>
+</body>
+</html>
